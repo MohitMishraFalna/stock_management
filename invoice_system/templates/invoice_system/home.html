@@ -1,0 +1,1068 @@
+  {% extends 'invoice_system/base.html' %}
+  {% block title %}Invoice Management System{% endblock %}
+  {% block body %}
+  {% load static %}
+  {% csrf_token %}
+        <div id="alert"></div>
+        <!-- This is checking Form of Customer is Exist or not -->
+        <div class="row">
+          <div class="col-sm-4">
+              <div class="card">
+                <div class="card-header bg-light selffnt text-center"><h4>Customer Checking</h3></div>
+                <div class="card-body">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text mywidth">Customer Name</span>
+                    </div>
+                    <input type="text" aria-label="Customer Name" tabindex="1" list="customer_result" name="customer_name" id="customer_name" class="form-control">
+                    <datalist id="customer_result">
+                      <!--Here is appending data.  -->
+                    </datalist>
+                  </div>
+                  <div class="input-group mt-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text mywidth">Mobile Number</span>
+                    </div>
+                    <input type="text" aria-label="Contact Number" tabindex="2" name="contact_number" id="contact_number" class="form-control" readonly>
+                  </div>
+                  <div class="input-group mt-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text mywidth">Customer Email</span>
+                    </div>
+                    <input type="text" aria-label="Email Address" tabindex="3" name="email" id="email" class="form-control" readonly>
+                  </div>
+                  <div class="input-group mt-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text mywidth">Customer Due</span>
+                    </div>
+                    <input type="text" aria-label="Email Address" tabindex="3" name="cust_due" id="cust_due" class="form-control" readonly>
+                  </div>
+                  <div class="text-center">
+                    <button class="btn text-white selfbtn mt-4 btn1" tabindex="4" id="custdetailcheck" name="custdetailcheck"><h5> If Customer is Not Exist. </h5></button>
+                  </div>
+                </div> 
+              </div>
+          </div>
+          <!-- Customer Order Details Show Here... -->
+          <div class="col-sm-8">
+            <div class="card">
+              <div class="card-header bg-light selffnt text-center"><h4>Order Details</h4></div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-sm-7">
+                    <div class="input-group mt-3">
+                      <div class="input-group-prepend">
+                          <span class="input-group-text mywidth">Enter Product</span>
+                      </div>
+                      <input type="text" aria-label="Product List" name="prod_list" id="prod_list" class="form-control">
+                    </div>
+                  </div>
+                  <div class="col-2 mt-3">
+                    <input type="text" aria-label="prod_qty" name="prod_qty" id="prod_qty" class="form-control prod_qty" placeholder="Quantity">
+                  </div>
+                  <div class="col mt-3">
+                      <button class="btn text-white mywidth selfbtn float-right" name="prod_entry" id="prod_entry"><h6>Add to Cart</h6></button>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col">                                             
+                    <div>
+                      <div class="card-header bg-light selffnt text-center"><h6><b>Product in Stock</b></h6></div>
+                      <div class="box">
+                        <ul id="searchitem" class="list-group searchitem">
+                        
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                      <button class="btn text-white mywidth selfbtn float-right" name="prod_update" id="prod_update"><h6>Increase Stock</h6></button>
+                      <button class="btn text-white mywidth selfbtn mt-3 mb-2 float-right" name="prod_details" id="prod_details"><h6>Add Product</h6></button><br/><br/>
+                      <input type="text" aria-label="Order No." name="inporderNo" id="inporderNo" class="form-control selfintput " placeholder="Order No.">
+                      <button class="btn text-white mywidth selfbtn float-right" name="updateorder" id="updateorder"><h6>Update Order</h6></button><br/>
+                      <a href="/invoice_system/dueclear/"><button class="btn text-white mywidth selfbtn float-right mt-3" name="duerecover" id="duerecover"><h6>Due/Reciept</h6></button></a><br/>
+                  </div>                      
+                </div>
+              </div> 
+            </div>
+          </div>
+        </div>
+        <!-- Customer's Bill Preview -->
+        <div class="card">
+          <div class="card-header bg-light selffnt text-center"><h4>Bill Description/Bill Preview</h4></div>
+            <div class="card-body">
+              <div id="alert1"></div>
+              <div class="table-responsive">
+                <table class="table table-bordered" id="addtocart">
+                  <thead>
+                    <tr>
+                        <th width="35%" class="text-center">Particular</th>
+                        <th width="10%" class="text-center">QTY</th>
+                        <th width="10%" class="text-center">Rate</th>
+                        <th width="15%" class="text-center">Discount Rate</th>
+                        <th width="15%" class="text-center">Payable Rs.</th>
+                        <th width="5%" class="text-center">Delete</th>
+                        <th width="5%" class="text-center" id="thshow" style="display:none;"></th>
+                    </tr>
+                  </thead>
+                </table>
+                <table class="table table-bordered">
+                  <tr class="text-center">
+                      <th width="15%">Total Amt.</th>
+                      <td width="10%" class="total_amt"></td>
+                      <th width="15%">Paid Amt.</th>
+                      <td width="10%"  contenteditable="true" class="paid_amt" id="paid_amt"></td>
+                      <th width="15%">Due Amt.</th>
+                      <td width="10%" class="due_amt"></td>
+                      <th width="15%">Cash Dis</th>
+                      <td width="10%" contenteditable="true" class="cash_discount" id="cash_discount"></td>
+                  </tr>
+                </table>
+              </div>
+              <button class="btn text-white mywidth selfbtn mt-3 float-right" name="purchase" id="purchase"><h6>Purchase</h6></button><br/>
+            </div> 
+          </div>
+        <div class="ordercancel col-sm-7">
+
+        </div>
+        <!-- Dynamic Containt Add from jqury and ajax. If user is exist so print in this dialog and 
+          if User not exist so print the Add New User Form here...  -->
+        <div class="col-sm-5 card1">
+                  
+        </div>
+        <div class="col-sm-5 card2">
+                  
+        </div>
+        <!-- When display any form Whether exist user details or Add new customer.
+        this div cover the all remaining contant -->
+        <div class="cover">
+
+        </div>
+    </div>
+    <script src={% static 'js/jquery-3.3.1.min.js' %}></script>
+    <script src={% static 'js/jquery-3.3.1.js' %}></script>
+    <script src={% static 'js/popper.min.js' %}></script>
+    <script src={% static 'js/bootstrap.min.js' %}></script> 
+    <script src={% static 'js/jquery.min.js' %}></script>
+    <script src={% static 'js/jquery-ui.min.js' %}></script>   
+  {% endblock %}    
+  {% block js %}
+  <script>
+  jQuery('#card1').window
+  // user exist or not if exist show the user information and if not exist show the Add New Customer Form
+  //view.checking
+  $('#customer_name').keyup(function(){
+      var cust_name = $('#customer_name').val();
+      $('#customer_result').html('');
+      var data = {
+        'cust_name':cust_name
+      }
+      //if cust_name length is greator then 1 so query will fire.
+      if(cust_name.length >= 1){
+        $.ajax({
+          type:"GET",
+          url:"/invoice_system/checking/",
+          data:data,
+          encode: true,
+        })
+        .done(function(data){
+            customer_details= JSON.parse(data);
+            if(customer_details.length > 0 & customer_details != {}){
+              for(i=0; i<customer_details.length; i++){
+                let cust_name = customer_details[i]['customer_name'];
+                let cust_cont = customer_details[i]['customer_contact'];
+                let cust_email = customer_details[i]['customer_email'];
+                let cust_due = customer_details[i]['customer_due'];
+                myopt=`<option>${cust_name}</option>`
+                $('#customer_result').append(myopt);
+                $('#contact_number').val(cust_cont);
+                $('#email').val(cust_email);
+                $('#cust_due').val(cust_due);
+              }
+            }
+        });
+      }       
+  });
+  
+  $('#custdetailcheck').click(function(){
+    mycard = `
+    <div class="card">
+      <div class="card-header bg-light selffnt text-center">
+        <h4>Add New Customer <button class="btn2">&times;</button></h4>
+      </div>
+      <div class="card-body cardScroll">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text mywidth">Customer Name</span>
+          </div>
+          <input type="text" aria-label="Customer Name" name="new_customer" id="new_customer" class="form-control">
+        </div>
+        <div class="input-group mt-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text mywidth">Mobile Number</span>
+          </div>
+          <input type="text" aria-label="New_ Number" name="new_contact_number" id="new_contact_number" class="form-control">
+        </div>
+        <div class="input-group mt-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text mywidth">Customer Email</span>
+          </div>
+          <input type="text" aria-label="Email Address" name="new_email" id="new_email" class="form-control">
+        </div>
+        <div class="input-group mt-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text mywidth">Gender</span>
+          </div>
+          <select class="custom-select" id="new_gender">
+            <option value="male">male</option>
+            <option value="female">female</option>
+          </select>
+        </div>
+        <div class="input-group mt-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text mywidth">Pincode</span>
+          </div>
+          <input type="text" aria-label="Pincode" name="new_pincode" id="new_pincode" onchange='getaddress(this.value)' class="form-control">
+        </div>
+        <div id="jqaddress">
+        </div>
+        <div class="text-right">
+          <button class="btn text-white selfbtn mt-4" id="add_new_customer" onclick='addnewcustomer()' name="add_new_customer"><h5>Add Customer</h5></button>
+        </div>
+      </div> 
+    </div>
+    `
+    // this line add dynamically content in div
+    $('.card1').html(mycard)
+    //This two line (card1 and cover) create the dynamic popup box
+    $('.card1').fadeIn('slow');
+    $('.cover').fadeIn('slow');
+
+    // this function run when click the (x) button which is stand on the popup box in left side
+    // this work is close the popup box which is create from the above two line (card1 and cover)
+    $('.btn2').on('click', function(){
+      $('.card1').fadeOut('slow');
+      $('.cover').fadeOut('slow');
+    });
+  });
+  // this is a function which is take city state country using postal api. its happining from ajax.
+  //view.ganrateaddress
+  function getaddress(str){
+    var pincode = str;
+    var send_request = new XMLHttpRequest();
+    let url = '{% url "ganrateaddress" %}'
+    send_request.open("GET",url + "?addressinfo=" + pincode,true);
+    // send_request.open("GET","http://localhost:8000/invoice_system/ganrateaddress/?addressinfo="+pincode,true);
+    send_request.send();
+
+    send_request.onreadystatechange = function(){
+      if(send_request.readyState==4 && send_request.status==200){
+        var data = send_request.responseText;
+        var address = JSON.parse(data);
+        var postOffice = address['PostOffice'];
+        
+        var state1, contry1
+        //it retrieve date from array
+        for(i=0; i<postOffice.length; i++){
+            dis1 = postOffice[i]['District'];
+            state1 = postOffice[i]['State'];
+            contry1 = postOffice[i]['Country'];
+            if(i==0){
+              break;
+            }
+        }
+        //Create the form dynamically and add in div tag
+        $(document).ready(function(){
+          myjqadddiv = `<div class="input-group mt-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text mywidth">City Name</span>
+                </div>
+                <select class="custom-select" id="new_cityname">
+                  
+                </select>
+              </div>
+              <div class="input-group mt-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text mywidth">District Name</span>
+                </div>
+                <input type="text" aria-label="District name" name="new_dis" id="new_dis" value="${dis1}" class="form-control">
+              </div>
+              <div class="input-group mt-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text mywidth">State Name</span>
+                </div>
+                <input type="text" aria-label="State name" name="new_state" id="new_state" value="${state1}" class="form-control">
+              </div>
+              <div class="input-group mt-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text mywidth">Contry Name</span>
+                </div>
+                <input type="text" aria-label="Contry name" name="new_contry" id="new_contry" value="${contry1}" class="form-control">
+              </div>
+              `
+              $('#add_new_customer').show();
+              $('#jqaddress').append(myjqadddiv);        
+        });
+
+        // this is append the option element in dynamic div from jquery using id new_cityname.
+        for(i=0; i<postOffice.length; i++){
+          var city1 = postOffice[i]['Name'];
+          myopt = `<option>${city1}</option>`
+          $('#new_cityname').append(myopt);
+        }  
+      }
+    }
+  }
+
+  // Add New Customer in Database from javascript ajax.
+  // views.addnewcustomer
+  function addnewcustomer(){
+    //get the value from input box using getElementById
+    var new_cust_name = document.getElementById("new_customer").value;
+    var new_cust_cont = document.getElementById("new_contact_number").value;
+    var new_cust_email = document.getElementById("new_email").value;
+    var new_cust_gender = document.getElementById("new_gender").value;
+    var new_cust_cityname = document.getElementById("new_cityname").value;
+    var new_cust_distrcit = document.getElementById("new_dis").value;
+    var new_cust_pincode = document.getElementById("new_pincode").value;
+    var new_cust_state = document.getElementById("new_state").value;
+    var new_cust_contry = document.getElementById("new_contry").value;
+    //create json or if we know python that is call dictionary.
+    var data = {"cust_name":new_cust_name, "cust_cont":new_cust_cont, "cust_email":new_cust_email, "cust_gender":new_cust_gender, "cust_cityname":new_cust_cityname, "cust_distrcit":new_cust_distrcit, "cust_pincode":new_cust_pincode, "cust_state":new_cust_state, "cust_contry":new_cust_contry};
+    //apply stringfy method on json
+    data = JSON.stringify(data);
+    //create object of XMLHttpRequest();
+    var send_data = new XMLHttpRequest();
+    //create the request and attech the value using ?
+    let url = '{% url "addnewcustomer" %}'
+    send_data.open("GET", url + "?customerinfo="+data, true);
+    // send_data.open("GET", "http://localhost:8000/invoice_system/addnewcustomer/?customerinfo="+data,true);
+    //send the request
+    send_data.send();
+    //Handle the response which is coming from django/server
+    send_data.onreadystatechange = function(){
+      if(send_data.readyState==4 && send_data.status==200){
+        alert(send_data.responseText);
+      }
+    }
+    document.getElementById("new_customer").value = "";
+    document.getElementById("new_contact_number").value = "";
+    document.getElementById("new_email").value = "";
+    document.getElementById("new_gender").value = "";
+    document.getElementById("new_cityname").value = "";
+    document.getElementById("new_dis").value = "";
+    document.getElementById("new_pincode").value = "";
+    document.getElementById("new_state").value = "";
+    document.getElementById("new_contry").value = "";
+    // document.location.reload();
+    $('.card1').fadeOut('slow');
+    $('.cover').fadeOut('slow');  
+  }
+  
+  $('#prod_details').click(function(){
+    myproddetailscard = `
+      <div class="card">
+        <div class="card-header text-center selffnt">
+          <h4>Add New Product <button class="btn btn2">&times;</button>
+          </h4>      
+        </div>
+        <div class="card-body">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text mywidth">Product Name</span>
+            </div>
+            <input type="text" aria-label="Product Name" name="prod_name" id="prod_name" class="form-control">
+          </div> 
+          <div class="input-group mt-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text mywidth">Product Quantity</span>
+            </div>
+            <input type="text" aria-label="Product Quantity" name="prod_qty1" id="prod_qty1" class="form-control">
+          </div>  
+          <div class="input-group mt-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text mywidth">Product Price</span>
+            </div>
+            <input type="text" aria-label="Product Price" name="prod_price" id="prod_price" class="form-control">
+          </div>  
+          <div class="input-group mt-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text mywidth">Product Discount</span>
+            </div>
+            <input type="text" aria-label="Product Discount" name="prod_dis" id="prod_dis" class="form-control">
+            <div class="input-group-append">
+              <span class="input-group-text">%</span>
+            </div>
+          </div>  
+          <div class="text-right">
+            <button class="btn text-white selfbtn mt-4" id="add_new_product" onclick='addnewproduct()' name="add_new_product"><h5>Add Product</h5></button>
+          </div>
+        </div>
+      </div>
+    `
+    $('.card1').html(myproddetailscard);
+
+    //This two line (card1 and cover) create the dynamic popup box
+    $('.card1').fadeIn('slow');
+    $('.cover').fadeIn('slow');
+    // this function run when click the (x) button which is stand on the popup box in left side
+    // this work is close the popup box which is create from the above two line (card1 and cover)
+    $('.btn2').on('click', function(){
+      $('.card1').fadeOut('slow');
+      $('.cover').fadeOut('slow');
+    });
+  });
+
+  //Store the Product in Database Using javascript Ajax;
+  // views.addnewproduct
+  function addnewproduct(){
+    //get value from textbox and store in variable;
+    var prod_name = document.getElementById('prod_name').value;
+    var prod_qty1 = document.getElementById('prod_qty1').value;
+    var prod_price = document.getElementById('prod_price').value;
+    var prod_dis = document.getElementById('prod_dis').value;
+
+    //Create json/dictionary for send the data in django/python to process.
+    var prod_data = {"prod_name":prod_name, "prod_qty1":prod_qty1, "prod_price":prod_price, "prod_dis":prod_dis}
+    //Convert dictionary/json to string using stringify method
+    var product_data = JSON.stringify(prod_data);
+    //Create Object from XMLHttpRequest;
+    var send_data1 = new XMLHttpRequest();
+    //Create Request.
+    let url = '{% url "addnewproduct" %}'
+    send_data1.open("GET", url + "?productinfo="+product_data, true);
+    // send_data1.open("GET","/invoice_system/addnewproduct/?productinfo="+product_data,true);
+    //Send Request to server.
+    send_data1.send();
+
+    //Get Response from server.
+    send_data1.onreadystatechange = function() {
+      if(send_data1.readyState == 4 && send_data1.status == 200){
+        alert(send_data1.responseText);
+      }
+    }
+    document.getElementById('prod_name').value = "";
+    document.getElementById('prod_qty1').value = "";
+    document.getElementById('prod_price').value = "";
+    document.getElementById('prod_dis').value = "";
+  }
+
+  // This jquery function get data from database table and append in ul's list item
+  // views.productsearch
+  $(document).on('keyup', '#prod_list, #search_prod', function(){
+    //insert the item in list
+    $('#searchitem').html('');
+    $('#product_result').html('');
+    // if this condition true it means textbox is empty and do not anything.
+    // This variable fill by itself value.
+    var mysearchitem = $('#prod_list').val();
+    var searchProductName = $('#search_prod').val();
+    
+    // This variable fill by the server json object.
+    if(mysearchitem == '' && searchProductName == ''){
+    }
+    //if this condition run it means textbox has a charrector or string.
+    else{
+      //if cust_name length is greator then 1 so query will fire.
+      if(mysearchitem.length >= 1 || searchProductName.length >= 1){
+        //when the controller enter in else part the ajax function run and get Data from Database.
+        $.ajax({
+          url:"/invoice_system/productsearch/",
+          type:"POST",
+          data:{"mysearchitem":mysearchitem, "searchProductName":searchProductName,
+          'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+          },
+          /*if return the data from django so this success function run and parse the data.
+          when data parse process complete then for loop append the data in ul's li list*/
+          success:function(data){
+            var result = JSON.parse(data);
+            var prod_list1;
+            if(result != {}){
+              var count = 6;
+              for(i=0; i<result.length; i++){
+                var prod_name_search = result[i]['product_name'];
+                var prod_qty_search = result[i]['product_qty'];
+                var prod_price_search = result[i]['product_price'];
+                if(mysearchitem != ''){
+                  //onclick method send the argument in addtextint function which is define after the function.
+                  myLi='<li id="list" tabindex="0" onkeydown="addtxtint(\'' + prod_name_search +'\',\'' + count + '\')" class="list-group-item tab"><span class="fntsize">'+prod_name_search+'</span><span class="float-right marl">'+prod_qty_search+'</span></li>'
+                  // myLi='<li id="list" tabindex="'+count+'" class="list-group-item tab"><span class="fntsize"><b>'+prod_name_search+'</b></span><span id="prod_list1 '+i+'" class="float-right marl"><b>'+prod_qty_search+'/'+prod_price_search+'</b></span></li>'
+                  $('#searchitem').append(myLi);
+                }
+                if(searchProductName != ''){
+                  myopt = '<option><span>'+prod_name_search+'</span></option>'
+                  $('#product_result').append(myopt);
+                }
+                count = count + 1;
+              }
+            }
+            else{
+              console.log("NO DATA FOUND.");
+            }
+            //This is check the Inventory Stock and Quantity Difference for book order or not.
+            $(document).on('keyup', '#prod_qty, #product_qty', function(){
+              var list_prod_name = $('#prod_list').val();
+              var list_prod_qty = $('#prod_qty').val();
+              var dynamic_product_name = $('#search_prod').val();
+              var dynamic_product_qty = $('#product_qty').val();
+
+              for(i=0; i<result.length; i++){
+                var p_n = result[i]['product_name'];
+                var p_q = result[i]['product_qty'];
+                if( p_n == list_prod_name && p_q <= list_prod_qty){
+                  var stock_limit = p_q - list_prod_qty;
+                  myalert = `<div class="alert alert-danger" role="alert">
+                      Your Inventory Stock is= ${p_q}. Your Requested QTY is= ${list_prod_qty}. Difference is in Minus from ${stock_limit}. Your Inventory can't allow you to Book Order.
+                  </div>`
+                  $('#alert').html(myalert);
+                  //This is set the time for alert message auto close.
+                  window.setTimeout(function() {
+                      $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                          $(this).remove(); 
+                      });
+                  }, 10000);
+                }
+                if( p_n == dynamic_product_name && p_q <= dynamic_product_qty){
+                  var stock_limit = p_q - dynamic_product_qty;
+                  myalert = `<div class="alert alert-danger" role="alert">
+                      Your Inventory Stock is= ${p_q}. Your Requested QTY is= ${dynamic_product_qty}. Difference is in Minus from ${stock_limit}. Your Inventory can't allow you to Book Order.
+                  </div>`
+                  $('#warning').html(myalert);
+                  //This is set the time for alert message auto close.
+                  window.setTimeout(function() {
+                      $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                          $(this).remove(); 
+                      });
+                  }, 10000);
+                }
+                else{
+                  // p_q=parseInt(p_q);
+                  // p_q1=parseInt(list_prod_name);
+                }
+              }
+            });
+          }
+        });
+      }    
+    }
+  });
+
+  // Create Table When click Add Product Button.
+  // views.addtocart
+  $(document).ready(function(){
+    var count = 0;
+    var total = 0;
+    $(document).on('click', '#prod_entry, #add_product', function(){
+      var pr_name = $('#prod_list').val();
+      var pr_qty = $('#prod_qty').val();
+      var dynamic_addproduct_name = $('#search_prod').val();
+      var dynamic_addproduct_qty = $('#product_qty').val();
+      var x;
+      if((pr_qty === '') && (dynamic_addproduct_qty !== '')){
+        x=dynamic_addproduct_qty;
+      }
+      else{
+        x=pr_qty;
+      }
+      count = count + 1;
+      $.ajax({
+        url: "/invoice_system/addtocart/",
+        type: "GET",
+        data:{'pr_name':pr_name, 'dynamic_addproduct_name':dynamic_addproduct_name},
+        success:function(data){
+          var return_response = JSON.parse(data);
+          var pro_name = return_response['product_name'];
+          var pro_qty = return_response['product_qty'];
+          var prod_rete = return_response['product_price'];
+          var dis_rate = return_response['product_discount'];
+          if((pr_name == pro_name) || (dynamic_addproduct_name == pro_name)){
+            var add_item = "<tr class='text-center' id='row"+count+"'>";
+            add_item = add_item + '<td class="particular">'+pro_name+'</td>';  
+            if(pr_name != ''){
+              add_item = add_item + '<td contenteditable="true" id="qty" class="qty'+count+'">'+x+'</td>';          
+            }
+            else{
+              add_item = add_item + '<td id="qty" class="qty'+count+'">'+x+'</td>';
+            }
+            add_item = add_item + '<td class="amount">'+prod_rete+'</td>';      
+            add_item = add_item + '<td class="discount_rate">'+dis_rate+'</td>';
+            var prod_amt = prod_rete * x;
+            var dis_amt = prod_amt * dis_rate / 100;
+            var tot_amt = prod_amt - dis_amt;   
+            add_item = add_item + '<td class="payable_amt" id="payable_amt'+count+'">'+tot_amt+'</td>';              
+            $(document).on("keyup", ".qty"+count, function(){
+              var p_q = $(this).text();
+              if((pro_name == pr_name) && (pro_qty <= p_q)){
+                var stock_limit = pro_qty - p_q;
+                myalert = `<div class="alert alert-danger" role="alert">
+                    Your ${pro_name} Inventory Stock is= ${pro_qty}. Your Requested QTY is= ${p_q}. Difference is in Minus from ${stock_limit}. Your Inventory can't allow you to Book Order.
+                </div>`
+                $('#alert1').html(myalert);
+                //This is set the time for alert message auto close.
+                window.setTimeout(function() {
+                    $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                        $(this).remove(); 
+                    });
+                }, 10000);
+              }
+              else{
+                // it is first minus the number and then plus the number.
+                var tr_id = "#" + jQuery(this).parents('tr').attr('id');
+                var add_amt = jQuery(tr_id).find('.payable_amt').text();
+                // this line minus the number from the total.
+                total = total - parseFloat(add_amt);
+                var prod_amt = prod_rete * p_q;
+                var dis_amt = prod_amt * dis_rate / 100 ;
+                var tot_amt = prod_amt - dis_amt; 
+                jQuery(tr_id).find('.payable_amt').html(tot_amt.toFixed(2));
+                // when munus the Number from total then add again the total.
+                total = total + parseFloat(tot_amt);
+                $('.total_amt').html(total.toFixed(2));
+              }
+            });     
+            if(pr_name != ''){
+              add_item = add_item + "<td style='display:none;'></td>"
+              add_item = add_item + "<td><button type='button' name='remove1' data-row='row"+count+"' class='btn btn-danger btn-sm remove1'>D</button></td>";
+            }
+            else{
+              add_item = add_item + "<td></td>"
+              add_item = add_item + "<td><button type='button' name='remove1' data-row='row"+count+"' class='btn btn-danger btn-sm remove1'>D</button></td>";
+            }
+              add_item = add_item + '</tr>';              
+            total = parseFloat(total) + parseFloat(tot_amt);
+            $('.total_amt').html(total.toFixed(2));
+            if(pr_name != ''){$('#addtocart').append(add_item);}
+            else{$('#dynamicTr').append(add_item);}
+          }
+        }
+      });
+    });
+
+    $(document).on('click', '.remove1', function(){
+      var delete_row = $(this).data('row');
+      var tr_id = "#" + jQuery(this).parents('tr').attr('id');
+      var less_totamt = jQuery(tr_id).find('.payable_amt').text();
+      total = parseFloat(total) - parseFloat(less_totamt);
+      $('.total_amt').html(total.toFixed(2));
+      $('.paid_amt').html(0);
+      $('.due_amt').html(0);
+      $('.cash_discount').html(0);
+      $('#' + delete_row).remove();
+    });
+
+    $(document).on('keyup', '#paid_amt, #cash_amt', function(){
+      var paid_amt = $('#paid_amt').text();
+      var cash_amt = $('#cash_amt').text();
+      // var due_amt;
+      if((paid_amt != '') && (cash_amt == '')){
+        var due_amt = parseFloat(total) - parseFloat(paid_amt);
+        $('.due_amt').html(due_amt.toFixed(2));
+      }
+      else{
+        var due_amt = parseFloat(total) - parseFloat(cash_amt);
+        $('.due_amt1').html(due_amt.toFixed(2));
+      }
+    });
+
+    $(document).on('blur', '#cash_discount, #cash_dis', function(){
+      var cash_discount = $('#cash_discount').text();       
+      var dynamic_cash_discount = $('#cash_dis').val() ;
+      var cash_amt = $('.cash_amt').text() ;   
+      var dynamic_total_amt = $('#total_amt').text()  ;
+      var dynamic_total_amt1 = $('#total_amt1').text()  ; 
+      if(cash_discount != ''){      
+        var due_amt = $('.due_amt').text();
+        due_amt = parseFloat(due_amt) - parseFloat(cash_discount);
+        $('.due_amt').html(due_amt.toFixed(2));
+      }
+
+      if("true" === jQuery(this).attr("changed")){
+        if(dynamic_cash_discount != ''){
+          var due_amt = $('.due_amt1').text() ;      
+          var dynamic_ord_due1 = $('#ord_due1').text()  ;
+          var dynamic_cust_due1 = $('#cust_due1').text()  ;
+          var dynamic_cash_dis1 = $('#cash_dis1').text()  ; 
+
+          due_amt = parseFloat(due_amt) - parseFloat(dynamic_cash_discount);
+          var cash_discount_total = parseFloat(dynamic_cash_discount) + parseFloat(dynamic_cash_dis1);
+          var grand_total = parseFloat(dynamic_total_amt) + parseFloat(dynamic_total_amt1);
+          var customer_total_due = parseFloat(dynamic_cust_due1) + parseFloat(due_amt);
+          var total_order_due = parseFloat(dynamic_ord_due1) + parseFloat(due_amt);
+          $('.cash_dis1').html(cash_discount_total.toFixed(2));
+          $('.total_amt1').html(grand_total.toFixed(2));
+          $('.cust_due1').html(customer_total_due.toFixed(2));
+          $('.ord_due1').html(total_order_due.toFixed(2));
+          $('.due_amt1').html(due_amt.toFixed(2));
+        }
+        jQuery(this).attr("changed", false);                
+      }
+      if(cash_amt == ''){
+        var grand_total = parseFloat(dynamic_total_amt) + parseFloat(dynamic_total_amt1);
+        $('.total_amt1').html(grand_total.toFixed(2));
+      }
+    });
+  });
+
+  $('#prod_list').on('keydown', function(e){
+    if(e.which===40){
+      $('#searchitem li:first').focus();
+    }
+  });
+  //   document.getElementById("prod_qty").select();  
+  // document.getElementById("prod_list").value = txtinpt;
+  function addtxtint(str,count){
+    var txtinpt = str;
+    event.preventDefault();
+    if (event.keyCode === 40) {
+        var c = count
+        $(".tab:focus").next().focus();
+    } 
+    event.preventDefault();
+    if (event.keyCode === 13 && event.keyCode !== 40) {
+      document.getElementById("prod_list").value = txtinpt;
+      document.getElementById("prod_qty").select();    
+    }
+    else if (event.keyCode === 38) {
+        $(".tab:focus").prev().focus();
+    }
+  }
+
+  // Update Product Quantity.
+  // views.productupdate
+  $('#prod_update').on('click', function(){
+    var prod_name = $('#prod_list').val();
+    var prod_qty = $('#prod_qty').val();
+
+    data={
+      'prod_name':prod_name,
+      'prod_qty':prod_qty
+    }
+
+    $.ajax({
+      type: 'GET',
+      url:'/invoice_system/productupdate/',
+      data:data,
+      encode:true,
+      success:function(data){
+        myalert = `<div class="alert alert-success" role="alert"><b>${data}</b></div>`
+          $('#alert').html(myalert);
+          //This is set the time for alert message auto close.
+          window.setTimeout(function() {
+              $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                  $(this).remove(); 
+              });
+          }, 4000);
+        }
+    });
+  });
+
+  // Make The order and print the reciept.
+  // views.palceOrder
+  $('#purchase').on('click', function(){
+    var customer_email = $('#email').val();
+    var total_amt = $('.total_amt').text();
+    var paid_amt = $('.paid_amt').text();
+    var due_amt = $('.due_amt').text();
+    var cash_discount = $('.cash_discount').text();
+    var order_status;
+    var prod_name = [];
+    var prod_qty = [];
+    var paidableamt = [];
+    var table = $('#addtocart tbody tr');
+    // var price_detail = [];
+    // price_detail.push(jQuery(element).find('td')[i].textContent);
+    $(table).each(function(index, element){
+      prod_name.push(jQuery(element).find('td')[0].textContent);
+      prod_qty.push(jQuery(element).find('td')[1].textContent);
+      paidableamt.push(jQuery(element).find('td')[4].textContent);
+    });
+
+    if(cash_discount == ''){
+      cash_discount = 0;
+    }
+    
+    if(due_amt != 0){
+      order_status = 'panding';
+    }
+    else{
+      order_status = 'completed';
+    }
+    data={'customer_email':customer_email, 'total_amt':total_amt, 'paid_amt':paid_amt,
+    'due_amt':due_amt, 'cash_discount':cash_discount, 'order_status':order_status, 'prod_name[]':prod_name, 'prod_qty[]':prod_qty
+    , 'paidableamt[]':paidableamt}
+
+    $.ajax({
+      url:'/invoice_system/palceOrder/',
+      type: 'GET',
+      encode: true,
+      data:data,
+      success: function(){
+        document.location = '/invoice_system/invoiceprint';
+      }
+    });  
+  });
+
+  // Update and Cancel Order.
+  // views.ordercancelupdate
+  var customer_email;
+  $('#updateorder').on('click', function(){
+    $('.ordercancel').empty();
+    var orderNo = $('#inporderNo').val();
+    var total=0;
+    var ord_due;
+    var cust_due;
+    var count = 1;
+    $.ajax({
+      url: '/invoice_system/ordercancelupdate/',
+      type: 'GET',
+      data:{'orderNo':orderNo},
+      encode:true,
+      success: function(data){
+        details = JSON.parse(data);
+        total = parseFloat(details.ordandcustdetails[0]['total_amt']);
+        ord_due = parseFloat(details.ordandcustdetails[0]['order_due']);
+        cust_due = parseFloat(details.ordandcustdetails[0]['customer_due']);
+        customer_email = details.ordandcustdetails[0]['customer_email'];
+        ordercancelform = "<div class='card'>\
+            <div class='table-responsive'>\
+              <div class='card-header bg-light selffnt text-center'>\
+                <h4>Update Or Cancel Order <button class='btn2'>&times;</button></h4>\
+              </div>\
+              <div class='card-body'>\
+                <div id='warning'></div>\
+                <div><span class='fontpaddingstyle'>Order Status.:</span><span>"+details.ordandcustdetails[0]['order_status']+"</span></div>\
+                <table>\
+                  <tbody>\
+                    <tr><th>Order No.</th><td>:</td><td id='order_no'>"+details.ordandcustdetails[0]['orderNo']+"</td><td width='60px'></td><th>Order Date</th><td>:</td><td>"+details.ordandcustdetails[0]['order_date']+"</td><td width='60px'><th>Order Due</th><td>:</td><td class='ord_due1' id='ord_due1'>"+ord_due+"</td></tr>\
+                    <tr><th>Customer</th><td>:</td><td>"+details.ordandcustdetails[0]['customer_name']+"</td><td width='60px'></td><th>Contact</th><td>:</td><td>"+details.ordandcustdetails[0]['customer_contact']+"</td><td width='60px'><th>Customer Due</th><td>:</td><td class='cust_due1' id='cust_due1'>"+cust_due+"</td></tr>\
+                    <tr><th>Paid Rs.</th><td>:</td><td class='paid_amt1'>"+details.ordandcustdetails[0]['paid_amt']+"</td><td width='60px'></td><th>Cash Discount</th><td>:</td><td class='cash_dis1' id='cash_dis1'>"+details.ordandcustdetails[0]['cash_discount']+"</td><td width='60px'><th>Total Rs.</th><td>:</td><td class='total_amt1' id='total_amt1'>"+total+"</td></tr>\
+                  </tbody>\
+                </table>\
+                <br>\
+                <div class='row'>\
+                  <div class='col-md-7'>\
+                    <div class='input-group'>\
+                      <div class='input-group-prepend'>\
+                        <span class='input-group-text mywidth'>Product Name</span>\
+                      </div>\
+                      <input type='text' aria-label='search_prod' list='product_result' id='search_prod' class='form-control'>\
+                      <datalist id='product_result'>\
+                        <!--Here is appending data.  -->\
+                      </datalist>\
+                    </div>\
+                  </div>\
+                  <div class='col-md-2'>\
+                    <input type='text' aria-label='product_qty' name='product_qty' id='product_qty' class='form-control' placeholder='Quantity'>\
+                  </div>\
+                  <div class='col'>\
+                    <button class='btn text-white mywidth selfbtn float-right add_product' name='add_product' id='add_product'><h6>Add Product</h6></button><br/>\
+                  </div>\
+                </div>\
+                <br>\
+                <h5 class='selffnt text-center border'>Product Details, Purchased by You.</h5>\
+                <br>\
+                <div style='max-height: 200px; overflow-y: auto;'>\
+                  <table class='table table-bordered' id='dynamicTr'>\
+                    <thead>\
+                      <tr>\
+                        <th width='25%' class='text-center'>Particular</th>\
+                        <th width='10%' class='text-center'>Qty</th>\
+                        <th width='10%' class='text-center'>Rate</th>\
+                        <th width='15%' class='text-center'>Discount %</th>\
+                        <th width='15%' class='text-center'>Payable</th>\
+                        <th width='5%' class='text-center'>Update</th>\
+                        <th width='5%' class='text-center'>Delete</th>\
+                      <tr>\
+                      </thead>\
+                      <tbody>\
+                      </tbody>\
+                  </table>\
+                </div>\
+                <table class='table table-bordered'>\
+                  <tr class='text-center'>\
+                      <th width='10%'>Total</th>\
+                      <td width='15%' class='total_amt' id='total_amt'></td>\
+                      <th width='10%'>Paid</th>\
+                      <td width='14%'  contenteditable='true' class='cash_amt' id='cash_amt'></td>\
+                      <th width='10%'>Due</th>\
+                      <td width='13%' class='due_amt1' id='due_amt1'></td>\
+                      <th width='20%'>Cash Discount</th>\
+                      <td width='17%'><input type='text' class='cash_dis' id='cash_dis'></td>\
+                  </tr>\
+                </table>\
+                <div class='text-right'>\
+                  <button class='btn text-white selfbtn order_cancel' id='order_cancel'><h6>Order Cancel</h6></button>\
+                  <button class='btn text-white selfbtn order_update' id='order_update'><h6>New Product Add</h6></button>\
+                </div>\
+              </div>\
+            </div>\
+          </div>";
+          $('.ordercancel').html(ordercancelform);
+          for(i=0; i<details.prodandproddetails.length; i++){
+            $('#dynamicTr tbody').append(
+              "<tr class='text-center trrow' id='trrow"+count+"'>\
+                <td width='25%' class='prod_name'>"+details.prodandproddetails[i]['product_name']+"</td>\
+                <td width='10%' contenteditable='true' id='qty"+count+"' class='serverqty'>"+details.prodandproddetails[i]['order_qty']+"</td>\
+                <td width='10%' class='prod_rate'>"+details.prodandproddetails[i]['product_price']+"</td>\
+                <td width='15%' class='prod_dis'>"+details.prodandproddetails[i]['product_discount']+"</td>\
+                <td width='15%' class='payable_amt1'>"+details.prodandproddetails[i]['paidable_amount']+"</td>\
+                <td width='5%'><button type='button' class='btn text-white selfbtn btn-sm update_item' id='update_item'>U</button></td>\
+                <td width='5%'><button type='button' class='btn btn-danger btn-sm remove_item' id='remove'>D</button></td>\
+              </tr>"
+            );
+            count = count+1;
+          }
+        //This two line (card1 and cover) create the dynamic popup box
+        $('.ordercancel').fadeIn('slow');
+        $('.cover').fadeIn('slow');
+
+        // this function run when click the (x) button which is stand on the popup box in left side
+        // this work is close the popup box which is create from the above two line (card1 and cover)
+        $('.btn2').on('click', function(){
+          $('.ordercancel').fadeOut('slow');
+          $('.cover').fadeOut('slow');
+        });
+
+              // This code will determine whether blur() gets executed or no.
+        jQuery("#cash_dis").change(function(e){
+          jQuery(this).attr("changed", true);
+        });
+
+        $(document).on('click', '.remove_item', function(){
+          var tr_id_del_row = "#" + jQuery(this).parents('tr').attr('id');
+          var prod_name = jQuery(tr_id_del_row).find('.prod_name').text();
+          data={'orderNo':orderNo, 'customer_email':customer_email, 'prod_name':prod_name};
+          $.ajax({
+            url:'/invoice_system/productcancelupdate/',
+            type:'GET',
+            encode: true,
+            data:data,
+            success: function(data){
+              console.log(data);
+            }
+          });
+          $(tr_id_del_row).remove();  
+        });
+      }
+    });
+    $(document).on('keyup', '.serverqty', function(){
+      // get value from table row's td from id or class.
+      var tr_id_rate = '#' + jQuery(this).parents('tr').attr('id');
+      var srvrrate = parseFloat(jQuery(tr_id_rate).find('.prod_rate').text());
+      var tr_id_dis = '#' + jQuery(this).parents('tr').attr('id');
+      var srvrdis = parseFloat(jQuery(tr_id_dis).find('.prod_dis').text());
+      var tr_id_pay = '#' + jQuery(this).parents('tr').attr('id');
+      var srvrpay = parseFloat(jQuery(tr_id_pay).find('.payable_amt1').text());
+      // get value from table row's td from index Number.
+      var tr_id_qty = '#' + jQuery(this).parents('tr').attr('id');
+      var srvrqty = jQuery(tr_id_qty).find('td')[1].textContent;
+      var dynamic_tot = parseFloat($('#total_amt1').text()) ;
+      dynamic_tot = dynamic_tot - srvrpay;
+      if(srvrqty == ''){
+        srvrqty=0;
+      }
+      // calculation
+      var prod_amt = srvrrate * parseFloat(srvrqty);
+      var dis_amt = parseFloat(prod_amt) * srvrdis / 100 ;
+      var tot_amt = parseFloat(prod_amt) - dis_amt; 
+      jQuery(tr_id_pay).find('.payable_amt1').html(tot_amt.toFixed(2));
+      dynamic_tot = dynamic_tot + tot_amt;
+      $('#total_amt1').html(dynamic_tot.toFixed(2));
+
+    });
+  });
+
+  $(document).on('click', '#update_item', function(){
+    var trid_prod_qty = '#' + jQuery(this).parents('tr').attr('id');
+    var prod_name = jQuery(trid_prod_qty).find('.prod_name').text();
+    var prod_qty = jQuery(trid_prod_qty).find('.serverqty').text();
+    var prod_payable = jQuery(trid_prod_qty).find('.payable_amt1').text();
+    var orderNo = jQuery('#order_no').text();
+    var prod_total = jQuery('.total_amt1').text();
+
+    data = {'prod_name':prod_name, 'prod_qty':prod_qty, 'prod_payable':prod_payable, 'prod_total':prod_total, 'orderNo':orderNo}
+
+    $.ajax({
+      url:'/invoice_system/updateproduct/',
+      type:'GET',
+      data:data,
+      encode:true,
+      success: function(){
+
+      }
+    });
+  });
+
+  //Whole Order Cancel 
+  $(document).on('click', '.order_cancel', function(){
+    var cnl = $('#order_no').text();
+    var prdname = [];
+      $('#dynamicTr tr td:first-child').each(function(index, element){
+          prdname.push(element.textContent);        
+      });
+      $.ajax({
+          url:'/invoice_system/ordercancel/',
+          type: 'GET',
+          data:{'ordercancel':cnl, 'emailcancel':customer_email, 'prdnameemail[]':prdname},
+          success:function(){
+            pass();
+          },
+    });
+
+    // When ajax function return success response then, this method run and redirect the page with order number on define 
+    // url. and this function call by the ajax success function.
+    function pass()
+    {
+      var orderNo = $('#order_no').text();
+      var url = '/invoice_system/invoiceprint?orderNo='+orderNo;
+      window.location.href=url;
+    } 
+  });
+
+  // Add New Product in OLD ID.
+  $(document).on('click', '.order_update', function(){
+    var total_amt = $('.total_amt1').text();
+    var order_no = $('#order_no').text();
+    var paid_amt = $('.cash_amt').text();
+    var paid_amt1 = $('.paid_amt1').text();
+    var due_amt = $('.ord_due1').text();
+    // var cash_discount = $('.cash_discount').text();
+    var customer_due = $('.cust_due1').text();
+    var cash_dis = $('.cash_dis1').text();
+    let prod_name1 = [];
+    let prod_qty1 = [];
+    let paidableamt1 = [];
+    var table = $('#dynamicTr tbody tr');
+    // var price_detail = [];
+    // price_detail.push(jQuery(element).find('td')[i].textContent);
+    $(table).each(function(index, element){
+      prod_name1.push(jQuery(element).find('td')[0].textContent);
+      prod_qty1.push(jQuery(element).find('td')[1].textContent);
+      paidableamt1.push(jQuery(element).find('td')[4].textContent);
+    });
+
+    if(paid_amt == ''){
+      paid_amt = 0;
+    }
+
+    total_paid = parseFloat(paid_amt) + parseFloat(paid_amt1);
+    
+    data={'customer_email':customer_email, 'order_no':order_no, 'total_amt':total_amt, 'paid_amt':total_paid,
+    'due_amt':due_amt, 'customer_due':customer_due, 'cash_dis':cash_dis, 'prod_name[]':prod_name1, 'prod_qty[]':prod_qty1
+    , 'paidableamt[]':paidableamt1}
+
+    $.ajax({
+      url:'/invoice_system/newproductinoldid/',
+      type: 'GET',
+      encode: true,
+      data:data,
+      success: function(data){
+        alert(data);
+        // document.location = '/invoice_system/invoiceprint';
+      }
+    }); 
+    $('.ordercancel').fadeOut('slow');
+    $('.cover').fadeOut('slow');
+  });
+  </script>
+  {% endblock %}

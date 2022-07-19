@@ -1,0 +1,107 @@
+{% extends 'invoice_system/base.html' %}
+{% block title %}Invoice Print{% endblock %}
+{% block body %}
+{% load static %}
+{% if print %}
+    <div id="maindiv">
+        <table class="col-sm-12">
+            <tbody>
+                {% for p in print %}
+                    <tr><th>Order Number</th><td>:</td> <td id="tdorderno">{{ p.ordertable_orderNo }}</td><td></td>
+                        <th>Customer Name</th><td>:</td> <td>{{ p.customertable_customer_name }}</td><td></td>
+                        <th>Customer Email</th><td>:</td> <td id="tdemail">{{ p.customertable_customer_email }}</td>
+                        </tr>
+                    <tr><th>Order Date</th><td>:</td><td>{{ p.ordertable_order_date }}</td><td></td>
+                        <th>Customer Contact</th><td>:</td> <td>{{ p.customertable_customer_contact }}</td><td></td>
+                        <th>Customer Address</th><td>:</td> <td>{{ p.customertable_city_name }} {{ p.customertable_pincode }} 
+                            {{ p.customertable_district }} {{ p.customertable_state_name }} {{ p.customertable_contry_name }}</td>
+                        </tr>
+                    <tr><th>Order Status</th><td>:</td> <td id='ord_status'>{{ p.ordertable_order_status }}</td><td></td>
+                        <th>Customer Gender</th><td>:</td> <td>{{ p.customertable_gender }}</td><td></td>
+                        <th>Customer Total Due</th><td>:</td> <td>{{ p.customertable_due_amt }}</td>
+                        </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+            <br>
+            <h5 class="text-center">Details of Item, Purchased by You.</h5>
+            <br>
+            <table class="table table-bordered table-striped ">
+                <thead>
+                    <tr>
+                        <th width="35%" class="text-center">Particular</th>
+                        <th width="10%" class="text-center">QTY</th>
+                        <th width="10%" class="text-center">Rate</th>
+                        <th width="15%" class="text-center">Discount Rate</th>
+                        <th width="15%" class="text-center">Paidable Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="tableproduct">
+                    {% for q in printsecond %}
+                        <tr>
+                            <td id="tdprd_name">{{ q.producttable_product_name }}</td>
+                            <td>{{ q.prodordertable_qty }}</td>
+                            <td>{{ q.producttable_product_price }}</td>
+                            <td>{{ q.producttable_product_discount }}%</td>
+                            <td>Rs. {{ q.prodordertable_paidable }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div>
+                <table class="table table-bordered">
+                    <tbody>
+                        {% for p in print %}
+                            <tr><th>Paid Amount</th><td>{{ p.ordertable_paid_amt }}</td>
+                            <th>Cash Discount</th><td>{{ p.ordertable_cash_discount }}</td>
+                            <th>Order Due</th><td>{{ p.ordertable_due_amt }}</td>
+                            <th>Total Amount</th><td>Rs. {{ p.ordertable_total_amt }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <table>
+                    <tbody>
+                        <tr><th>Company Name</th><td>:</td><td>Mohit Mishra & Company Private Limited</td></tr>
+                        <tr><th>Contact Number</th><td>:</td><td>8690716407</td></tr>
+                        <tr><th>Email</th><td>:</td><td>mohitmishra.falna850@gmail.com</td></tr>
+                        <tr><th>Address</th><td>:</td><td>Badel Road Behind Old ST Works Shop, </td></tr>
+                        <tr><td></td><td></td><td>Falna, Bali, Pali, Rajasthan 306116</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="mt-4 mb-4 d-print-none">
+            <a href=""><button class="btn text-white mywidth selfbtn " id="cancel">Cancel</button></a>
+            <button class="btn text-white mywidth selfbtn " id="print">Print</button>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block js%}
+<script>
+// After print inovice page open order will cancel.
+$('#cancel').on('click', function(){
+    var cnl = $('#tdorderno').text();
+    var cmtemail = $('#tdemail').text();
+    var prdname = [];
+    
+    $('#tableproduct tr td:first-child').each(function(index, element){
+        prdname.push(element.textContent);        
+    });
+    $.ajax({
+        url:'/invoice_system/ordercancel/',
+        type: 'GET',
+        data:{'ordercancel':cnl, 'emailcancel':cmtemail, 'prdnameemail[]':prdname},
+        success:function(data){
+            document.location = 'invoice_system/';
+        }
+    });
+});
+
+// Print the Bill or Reciept.
+$('#print').on('click', function(){
+    window.print();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends 'invoice_system/base.html' %}
+{% block title %}Oreder Clear And Bill Print Page{% endblock %}
+{% block body %}
+{% load static %}
+<div class="row">
+    <div class="col-sm-2">
+        <input type="text" aria-label="Contact Number" list="customer_result" tabindex="1" name="customer_name" id="customer_name" class="form-control mt-2 customer_name" placeholder="Customer Name">
+        <datalist id="customer_result">
+            <!--Here is appending data.  -->
+        </datalist>
+    </div>
+    <div class="col-sm-2">
+        <input type="text" aria-label="Contact Number" tabindex="2" name="cont_no" id="cont_no" class="form-control mt-2 cont_no" placeholder="contact No.">
+    </div>
+    <div class="col-sm-3">
+        <input type="text" aria-label="Contact Number" tabindex="3" name="cust_email" id="cust_email" class="form-control mt-2 cust_email" placeholder="Email">
+    </div>
+    <div class="col-sm-1">
+        <button class="btn text-white selfbtn mt-2 cust_name" style="width:100px;" tabindex="4" name="cust_name" id="cust_name"><h6>Due Clear</h6></button>
+    </div>
+    <div class="col-sm-2">
+        <input type="text" aria-label="Contact Number" style="margin-left:35px;" tabindex="5" name="order_no" id="order_no" class="form-control mt-2 order_no" placeholder="Order Number">
+    </div>
+    <div class="col-sm-2">
+        <button class="btn text-white selfbtn mt-2 orderNo" style="margin-left:41px;" tabindex="6" name="orderNo" id="orderNo" onclick="pass()"><h6>Print Reciept</h6></button>
+    </div>
+</div>
+<div class="table-responsive">
+    <table class="table table-bordered dynamicTr" id="dynamicTr">
+        <thead>
+            <tr>
+                <th width="15%" class="text-center">Order No.</th>
+                <th width="35%" class="text-center">Particular</th>
+                <th width="10%" class="text-center">Paid Rs.</th>
+                <th width="10%" class="text-center">Due</th>
+                <th width="10%" class="text-center">Total</th>
+                <th width="15%" class="text-center">Status</th>
+                <th width="20%" class="text-center">Completed</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+    $('#customer_name').keyup(function(){
+        var customer_name = $('#customer_name').val();
+        $('#customer_result').html('');
+        var data = {'customer_name':customer_name}
+        if(customer_name.length>=1){
+            $.ajax({
+                url:'/invoice_system/searchcustomerdetails/',
+                type:'GET',
+                data:data,
+                encode:true,
+                success: function(data){
+                    customer_details= JSON.parse(data);
+                    if(customer_details.length > 0 & customer_details != {}){
+                        for(i=0; i<customer_details.length; i++){
+                            let cust_id = customer_details[i]['customer_id'];
+                            let cust_name = customer_details[i]['customer_name'];
+                            let cust_cont = customer_details[i]['customer_contact'];
+                            let cust_email = customer_details[i]['customer_email'];
+                            myopt='<option>'+cust_name+'</option>';
+                            $('#customer_result').append(myopt);
+                            $('#cont_no').val(cust_cont);                            
+                            $('#cust_email').val(cust_email);                            
+                        }
+                    }
+                }
+            });
+        }
+    });
+    $('#cust_name').on('click', function(){
+        var customer_email = $('#cust_email').val();
+        var data = {'cust_email':customer_email};
+        var count = 0;
+        $.ajax({
+            url:'/invoice_system/dueclear/',
+            type:'GET',
+            data:data,
+            encode:true,
+            success: function(data){
+                var records = JSON.parse(data);
+                $('#dynamicTr tbody').empty();
+                for(i=0; i<records.record.length; i++){
+                    var mytd = "<tr class='text-center trrow' id='trrow"+count+"'>\
+                        <td width='15%' class='ord_no'>"+records.record[i]['order_no']+"</td>\
+                        <td width='35%' class='prod_name'>"+records.printeditemsecond[i]['producttable_product_name']+"</td>\
+                        <td width='10%' class='paid_amt'>"+records.record[i]['paid_amt']+"</td>\
+                        <td width='10%' class='due_amt'>"+records.record[i]['due_amt']+"</td>\
+                        <td width='10%' class='total_amt'>"+records.record[i]['total_amt']+"</td>\
+                        <td width='15%'  class='ord_status'>"+records.record[i]['order_status']+"</td>\
+                        <td width='20%'><button type='button' class='btn text-white selfbtn btn-sm complete_due' id='complete_due'>C</button></td>\
+                        </tr>"
+                    $('#dynamicTr tbody').append(mytd);
+                    // document.write(mytd)
+                    count = count + 1;
+                }
+            }
+        });
+    });
+    $(document).on('click','.complete_due', function(){
+        var trid_prod_qty = '#' + jQuery(this).parents('tr').attr('id');
+        var order_no = jQuery(trid_prod_qty).find('.ord_no').text();
+        var order_due = jQuery(trid_prod_qty).find('.due_amt').text();
+        console.log(order_no);
+        console.log(order_due);
+        var data = {'order_no':order_no, 'order_due':order_due};
+        $.ajax({
+            url:'/invoice_system/updatedue/',
+            type:'GET',
+            data:data,
+            encode:true,
+            success: function(data){
+                alert(data);
+            }  
+        });
+    });
+    function pass()
+    {
+        var orderNo = document.getElementById('order_no').value;
+        console.log(orderNo);
+        var url = '/invoice_system/invoiceprint?orderNo='+orderNo;
+        window.location.href=url;
+    } 
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+<html>
+    <head>
+        <title>Sent Invoice By Mail</title>
+        <style>
+            .heading{
+                font-size: 26px;
+                text-align: center;
+                height: 200px;
+                width: 100%;
+                color: white;
+                background-color: #337ab7;
+                padding-top: 10px;
+            }
+            .heading4{
+                font-size: 12px;
+                text-align: center;
+                height: 50px;
+                width: 100%;
+                color: white;
+                background-color: #337ab7;
+                padding-top: 10px;
+            }
+            th{
+                text-align: left;
+                padding-left: 26px;
+            }
+            td{
+                text-align: left;
+                padding-left: 26px;
+            }
+        </style>
+    </head>
+    <body>
+        {% load static %}
+            {% if print %}
+                <h1 class="heading">ORDER INVOICE</h1>
+                <table>
+                    <tbody>
+                        {% for p in print %}
+                            <tr><th width="40%">Order Number</th><td>{{ p.ordertable_orderNo }}</td><td width="40px"></td>
+                                <th width="40%">Order Date</th><td>{{ p.ordertable_order_date }}</td>
+                            </tr>
+                            <tr><th width="40%">Customer Name</th><td>{{ p.customertable_customer_name }}</td><td width="40px"></td>
+                                <th width="40%">Customer Contact</th><td>{{ p.customertable_customer_contact }}</td>
+                            </tr>
+                            <tr><th width="40%">Customer Email</th><td>{{ p.customertable_customer_email }}</td><td width="40px"></td>
+                                <th width="40%">Customer Gender</th><td>{{ p.customertable_gender }}</td>
+                            </tr>
+                            <tr><th width="40%">Customer Address</th><td>{{ p.customertable_city_name }} {{ p.customertable_pincode }} 
+                                {{ p.customertable_district }} {{ p.customertable_state_name }} {{ p.customertable_contry_name }}</td><td width="40px"></td>
+                                <th width="40%">Total Due</th><td>{{ p.customertable_due_amt }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <br>
+                <h4 class="heading4">Details of Item, Purchased by You.</h4>
+                <br>
+                <table width="90%">
+                    <thead>
+                        <tr>
+                            <th width="25%">Particular</th>
+                            <th width="25%">QTY</th>
+                            <th width="25%">Rate</th>
+                            <th width="25%">Discount %</th>
+                            <th width="25%">Payable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for q in printsecond %}
+                            <tr>
+                                <td>{{ q.producttable_product_name }}</td>
+                                <td>{{ q.prodordertable_qty }}</td>
+                                <td>{{ q.producttable_product_price }}</td>
+                                <td>{{ q.producttable_product_discount }}%</td>
+                                <td>Rs. {{ q.prodordertable_paidable }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <br>
+                <br>
+                <table>
+                    <tbody>
+                        {% for p in print %}
+                            <tr><th width="23%">Company Name</th><td>Mohit Mishra & Company</td><td width="30px"></td><th>Paid Amount</th><td>{{ p.ordertable_paid_amt }}</td></tr>
+                            <tr><th width="23%">Contact Number</th><td>8690716407</td><td width="30px"></td><th>Cash Discount</th><td>{{ p.ordertable_cash_discount }}</td></tr>
+                            <tr><th width="23%">Email</th><td>mohitmishra.falna850@gmail.com</td><td width="30px"></td><th>Order Due</th><td>{{ p.ordertable_due_amt }}</td></tr>
+                            <tr><th width="23%">Address</th><td>Badel Road Behind Old ST Works Shop, </td><td width="30px"></td><th>Total Amount</th><td>Rs. {{ p.ordertable_total_amt }}</td></tr>
+                            <tr><th width="23%"></th><td>Falna, Bali, Pali, Rajasthan 306116</td></tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+                <br/>
+            {% endif %}
+    </body>
+</html>

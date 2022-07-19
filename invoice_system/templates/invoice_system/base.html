@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+    <head>
+        <title>{% block title %} {% endblock %}</title>
+        <!-- Bootstrap and style sheet file link -->
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'image/favicon.jpg' %}" rel="icon">
+        <link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
+    </head>
+    <body>
+      <!-- For Position Static -->
+      <div class="position-static">
+        <!-- Bootstrap Container -->
+        <div class="container">
+          <div class="page-header selfhdng text-white text-center">
+            <h1>Invoice Management System</h1>
+          </div>
+          {% block body %} {% endblock %}
+        <script src={% static 'js/jquery-3.3.1.min.js' %}></script>
+        <script src={% static 'js/jquery-3.3.1.js' %}></script>
+        <script src={% static 'js/popper.min.js' %}></script>
+        <script src={% static 'js/bootstrap.min.js' %}></script> 
+        <script src={% static 'js/jquery.min.js' %}></script>
+        <script src={% static 'js/jquery-ui.min.js' %}></script>
+        {% block js %} {% endblock %}       
+    </body>
+</html>
+<script>
+</script>
