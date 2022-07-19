@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = False
 
 # ALLOWED_HOSTS = ["*"]
-ALLOWED_HOSTS = ["stock-management-system-09.herokuapp.com", "localhost"]
+ALLOWED_HOSTS = ["stock-mangement-09.herokuapp.com", "localhost"]
 
 
 # Application definition
@@ -94,10 +94,10 @@ DATABASES = {
    #if we are using the externall mysql like xampp, ampps for database so it is must compulsory to install mysql-connector and mysqlclient for connect from mysql.
     'default':{
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dfvn331cpafirg',
-        'USER': 'sowgaavcicpsnb',
-        'PASSWORD':'33c11c8f4764b60562f27304768d9c300051c4645ad65a3c88d54c3cb684f8f7',
-        'HOST': 'ec2-3-224-164-189.compute-1.amazonaws.com',
+        'NAME': 'd4cdln1oprn26q',
+        'USER': 'yazeitwebdpwmp',
+        'PASSWORD':'7d11b52e39dfc6edd3695a3dfefad449e4ef3f1368441882e76ef0f33a1968a1',
+        'HOST': 'ec2-44-206-214-233.compute-1.amazonaws.com',
         'PORT':'5432',
     }
 }
