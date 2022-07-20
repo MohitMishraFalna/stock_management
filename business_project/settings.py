@@ -9,12 +9,12 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
+
 from corsheaders.defaults import default_headers
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 
 # Quick-start development settings - unsuitable for production
@@ -24,11 +24,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECRET_KEY = 'e=!8xi!j5#f%rd3#_m=-!68)_v*=5ui9ox1**b0n9b!sm4dvd7'
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# ALLOWED_HOSTS = ["*"]
-ALLOWED_HOSTS = ["stock-mangement-09.herokuapp.com", "localhost"]
+ALLOWED_HOSTS = ['stock-management-02.herokuapp.com', 'localhost']
+CSRF_TRUSTED_ORIGINS = ['stock-management-02.herokuapp.com']
 
 
 # Application definition
@@ -44,7 +45,7 @@ INSTALLED_APPS = [
     'invoice_system',
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE = [ 
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.BrokenLinkEmailsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -83,22 +84,16 @@ WSGI_APPLICATION = 'business_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
 
 DATABASES = {
    #if we are using the externall mysql like xampp, ampps for database so it is must compulsory to install mysql-connector and mysqlclient for connect from mysql.
     'default':{
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd4cdln1oprn26q',
-        'USER': 'yazeitwebdpwmp',
-        'PASSWORD':'7d11b52e39dfc6edd3695a3dfefad449e4ef3f1368441882e76ef0f33a1968a1',
-        'HOST': 'ec2-44-206-214-233.compute-1.amazonaws.com',
-        'PORT':'5432',
+        'NAME': 'dakv4voc4rqq97', 
+        'USER': 'givpwuldgolpko',
+        'PASSWORD': '3077d08919dd922d8c1140dc9d596f7ed80b0fc29cb64f3029255647b0e5a508',
+        'HOST': 'ec2-34-235-198-25.compute-1.amazonaws.com',
+        'PORT': '5432'
     }
 }
 
@@ -135,7 +130,17 @@ USE_L10N = True
 
 USE_TZ = True   
 
+CSRF_COOKIE_SECURE = True
+
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS = default_headers + (
+    'Access-Control-Allow-Origin',    
+)
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = (
+  'https://stock-management-02.herokuapp.com/',
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -143,14 +148,12 @@ CORS_ORIGIN_ALLOW_ALL = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
-CORS_ALLOW_HEADERS = default_headers + (
-    'Access-Control-Allow-Origin',
-)
 
+# Email send setting
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'mohitmishra.falna850@gmail.com'
-# EMAIL_HOST_PASSWORD = 
+EMAIL_HOST_USER = 'your email'
+EMAIL_HOST_PASSWORD = 'password'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False

@@ -80,7 +80,7 @@
                       <button class="btn text-white mywidth selfbtn mt-3 mb-2 float-right" name="prod_details" id="prod_details"><h6>Add Product</h6></button><br/><br/>
                       <input type="text" aria-label="Order No." name="inporderNo" id="inporderNo" class="form-control selfintput " placeholder="Order No.">
                       <button class="btn text-white mywidth selfbtn float-right" name="updateorder" id="updateorder"><h6>Update Order</h6></button><br/>
-                      <a href="/invoice_system/dueclear/"><button class="btn text-white mywidth selfbtn float-right mt-3" name="duerecover" id="duerecover"><h6>Due/Reciept</h6></button></a><br/>
+                      <a href="{% url 'dueclear/' "><button class="btn text-white mywidth selfbtn float-right mt-3" name="duerecover" id="duerecover"><h6>Due/Reciept</h6></button></a><br/>
                   </div>                      
                 </div>
               </div> 
@@ -468,7 +468,8 @@
         //when the controller enter in else part the ajax function run and get Data from Database.
         $.ajax({
           url:"/invoice_system/productsearch/",
-          type:"POST",
+          type:"GET",
+          headers: {'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()},
           data:{"mysearchitem":mysearchitem, "searchProductName":searchProductName,
           'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
           },
@@ -1014,7 +1015,7 @@
     function pass()
     {
       var orderNo = $('#order_no').text();
-      var url = '/invoice_system/invoiceprint?orderNo='+orderNo;
+      var url = '{% url "invoiceprint" %}' + '?orderNo='+orderNo;
       window.location.href=url;
     } 
   });

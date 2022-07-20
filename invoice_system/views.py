@@ -103,10 +103,10 @@ def ganrateaddress(request):
     return render(request, 'invoice_system/home.html')
 
 def productsearch(request):
-    if request.method=="POST":
+    if request.method=="GET":
         # get the value from jquery ajax.
-        search_prod = request.POST.get("mysearchitem")
-        dynamic_search_prod = request.POST.get("searchProductName")
+        search_prod = request.GET.get("mysearchitem")
+        dynamic_search_prod = request.GET.get("searchProductName")
         # if the variable is not empty then retrieve the data from database table
         try:                
             if search_prod != '' or dynamic_search_prod != '':
